@@ -1,0 +1,90 @@
+#!/usr/bin/env node
+
+/* Module dependencies */
+var JSHINT = require('../contrib/jshint.js').JSHINT,
+    fs = require('fs');
+
+/* Usage docs */
+var usage = '' +
+    '\n' +
+    '  Usage: jshint [options] [files]\n' +
+    '\n' +
+    '  Options are any of the JSHINT options as seen at: http://jshint.com/\n' +
+    '  For instance, the "curly" option can be enabled with: --curly=true\n';
+
+/* Arguments */
+var args = process.argv.slice(2);
+
+function extend(dest, src) {
+    for(var prop in src) 
+        dest[prop] = src[prop];
+    return dest;
+}
+
+for(var i = 0; i < files.length; i++) {
+    var file;
+    if(files[i][0] == '/') {
+        file = files[i];
+    } else {
+        file = process.cwd() + '/' + files[i];
+    }
+    
+    var rc = {};
+
+    // Grab jshint options. First we check installPrefix/etc/jshintrc.
+    try {
+        fs.statSync(process.installPrefix + '/etc/jshintrc');
+        rc.global = fs.readFileSync(process.installPrefix + '/etc/jshintrc', 'utf8');
+    } catch(err) {
+        // Just assume it doesn't exist.
+    }
+
+    // Next we check home
+    try {
+        fs.statSync('~/.jshintrc');
+        rc.home = fs.readFileSync('~/.jshintrc');
+    } catch(err) {
+        // It's not there.
+    }
+
+    // Next we check this dir
+    try {
+        fs.statSync(process.cwd() + '/.jshintrc');
+        rc.local = fs.readFileSync(process.cwd() + '/.jshintrc');
+    } catch(err) {
+        // Not there.
+    }
+
+    // The local overrides the home overrides the global.
+    var jshintOpts = {};
+    if(rc.global)
+        jshintOpts = extend(jshintOpts, rc.global);
+    if(rc.home)
+        jshintOpts = extend(jshintOpts, rc.home);
+    if(rc.local)
+        jshintOpts = extend(jshintOpts, rc.local);
+       
+
+    if(!JSHINT(fs.readFileSync(file, 'utf8'), jshintOpts)) {
+        console.log('There were errors in file ' + file + '\n');
+        for(var i = 0; i < JSHINT.errors.length; i++) {
+            var error = JSHINT.errors[i];
+            console.log('Line ' + error.line + ':' + error.character + '\n');
+            console.log('\t' + error.evidence);
+            console.log('\tReason: ' + error.reason);
+            if(error.a) {
+                console.log('\tDetails:');
+                console.log('\t' + error.a);
+                if(error.b)
+                    console.log('\t' + error.b);
+                if(error.c)
+                    console.log('\t' + error.c);
+                if(error.d)
+                    console.log('\t' + error.d);
+            }
+            console.log();
+        }
+    } else {
+        console.log(file + ' OK!');
+    }
+}
