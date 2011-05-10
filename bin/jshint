@@ -82,7 +82,10 @@ for(var i = 0; i < args.length; i++) {
     jshintOpts = extend(jshintOpts, rc.cmdLine);
 
     if(!JSHINT(fs.readFileSync(file, 'utf8'), jshintOpts)) {
-        console.log('There were errors in file ' + file + '\n');
+        if(args.length > 1) {
+            console.log('There were errors in file ' + file + '\n');
+        }
+
         for(var i = 0; i < JSHINT.errors.length; i++) {
             var error = JSHINT.errors[i];
             console.log('Line ' + error.line + ':' + error.character + '\n');
@@ -101,6 +104,10 @@ for(var i = 0; i < args.length; i++) {
             console.log();
         }
     } else {
-        console.log(file + ' OK!');
+        if(args.length > 1) {
+            console.log(file + ' OK!');
+        } else {
+            console.log('OK!');
+        }
     }
 }
