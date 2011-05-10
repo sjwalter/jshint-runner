@@ -13,7 +13,18 @@ var usage = '' +
     '  For instance, the "curly" option can be enabled with: --curly=true\n';
 
 /* Arguments */
-var args = process.argv.slice(2);
+var args = process.argv.slice(2),
+    rc = {
+        cmdLine: {},
+        global: {},
+        local: {},
+        home: {}
+    };
+
+if(args.length === 0) {
+    console.log(usage);
+    process.exit(-1);
+}
 
 function extend(dest, src) {
     for(var prop in src) 
@@ -21,15 +32,23 @@ function extend(dest, src) {
     return dest;
 }
 
-for(var i = 0; i < files.length; i++) {
-    var file;
-    if(files[i][0] == '/') {
-        file = files[i];
-    } else {
-        file = process.cwd() + '/' + files[i];
+while(args[0].substr(0, 2) == '--') {
+    var curArg = args.shift().substr(2).split('=');
+    if(curArg.length !== 2) {
+        console.log(usage);
+        process.exit(-1);
     }
-    
-    var rc = {};
+
+    rc.cmdLine[curArg[0]] = curArg[1];
+}
+
+for(var i = 0; i < args.length; i++) {
+    var file;
+    if(args[i][0] == '/') {
+        file = args[i];
+    } else {
+        file = process.cwd() + '/' + args[i];
+    }
 
     // Grab jshint options. First we check installPrefix/etc/jshintrc.
     try {
@@ -55,15 +74,12 @@ for(var i = 0; i < files.length; i++) {
         // Not there.
     }
 
-    // The local overrides the home overrides the global.
+    // The cmd line overrides the local overrides the home overrides the global.
     var jshintOpts = {};
-    if(rc.global)
-        jshintOpts = extend(jshintOpts, rc.global);
-    if(rc.home)
-        jshintOpts = extend(jshintOpts, rc.home);
-    if(rc.local)
-        jshintOpts = extend(jshintOpts, rc.local);
-       
+    jshintOpts = extend(jshintOpts, rc.global);
+    jshintOpts = extend(jshintOpts, rc.home);
+    jshintOpts = extend(jshintOpts, rc.local);
+    jshintOpts = extend(jshintOpts, rc.cmdLine);
 
     if(!JSHINT(fs.readFileSync(file, 'utf8'), jshintOpts)) {
         console.log('There were errors in file ' + file + '\n');
