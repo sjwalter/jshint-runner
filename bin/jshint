@@ -85,8 +85,7 @@ for(var i = 0; i < args.length; i++) {
     jshintOpts = extend(jshintOpts, rc.home);
     jshintOpts = extend(jshintOpts, rc.local);
     jshintOpts = extend(jshintOpts, rc.cmdLine);
-    console.error(jshintOpts.toString());
-    console.error(jshintOpts.strict);
+
 
     if(!JSHINT(fs.readFileSync(file, 'utf8'), jshintOpts)) {
         if(args.length > 1) {
