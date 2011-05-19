@@ -39,7 +39,7 @@ while(args[0].substr(0, 2) == '--') {
         process.exit(-1);
     }
 
-    rc.cmdLine[curArg[0]] = curArg[1];
+    rc.cmdLine[curArg[0]] = curArg[1] === 'true';
 }
 
 function loadOptions(path, encoding) {
