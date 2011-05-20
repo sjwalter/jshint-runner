@@ -27,7 +27,7 @@ if(args.length === 0) {
 }
 
 function extend(dest, src) {
-    for(var prop in src) 
+    for(var prop in src)
         dest[prop] = src[prop];
     return dest;
 }
@@ -93,22 +93,23 @@ for(var i = 0; i < args.length; i++) {
         }
 
         for(var i = 0; i < JSHINT.errors.length; i++) {
-            var error = JSHINT.errors[i];
-            console.log('Line ' + error.line + ':' + error.character + '\n');
-            console.log('\t' + error.evidence);
-            console.log('\tReason: ' + error.reason);
+            var error = JSHINT.errors[j];
+            console.error('Line %s:%s', error.line, error.character);
+            console.error('\t%s', error.evidence);
+            console.error('\tReason: %s', error.reason);
             if(error.a) {
-                console.log('\tDetails:');
-                console.log('\t' + error.a);
+                console.error('\tDetails:');
+                console.error('\t%s', error.a);
                 if(error.b)
-                    console.log('\t' + error.b);
+                    console.error('\t%s', error.b);
                 if(error.c)
-                    console.log('\t' + error.c);
+                    console.error('\t%s', error.c);
                 if(error.d)
-                    console.log('\t' + error.d);
+                    console.error('\t$s', error.d);
             }
-            console.log();
+            console.error();
         }
+
     } else {
         if(args.length > 1) {
             console.log(file + ' OK!');
