@@ -92,7 +92,7 @@ for(var i = 0; i < args.length; i++) {
             console.log('There were errors in file ' + file + '\n');
         }
 
-        for(var i = 0; i < JSHINT.errors.length; i++) {
+        for(var j = 0; j < JSHINT.errors.length; j++) {
             var error = JSHINT.errors[j];
             console.error('Line %s:%s', error.line, error.character);
             console.error('\t%s', error.evidence);
