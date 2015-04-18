@@ -88,6 +88,10 @@ for(var i = 0; i < args.length; i++) {
     jshintOpts = extend(jshintOpts, rc.local);
     jshintOpts = extend(jshintOpts, rc.cmdLine);
 
+    // Silently ignore items that aren't files (directories, ...)
+    if(!fs.statSync(file).isFile()){
+        continue;
+    }
 
     if(!JSHINT(fs.readFileSync(file, 'utf8'), jshintOpts)) {
         if(args.length > 1) {
